@@ -1,20 +1,32 @@
 package todo;
 
-public class Task {
-    protected String description;
-    protected boolean isCompleted;
+import java.io.Serializable;
 
-    public Task(String description) {
+public class Task implements Serializable {
+    private String description;
+    private boolean isCompleted;
+
+    public Task(String description, boolean isCompleted) {
         this.description = description;
-        this.isCompleted = false;
+        this.isCompleted = isCompleted;
     }
 
-    public void setCompleted(boolean completed) {
-        isCompleted = completed;
+    public void setCompleted() {
+        isCompleted = true;
     }
+
+    public boolean isCompleted() {
+        return isCompleted;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+
 
     @Override
     public String toString() {
-        return description;
+        return  description + isCompleted;
     }
 }

@@ -1,0 +1,5 @@
+Finish the code;true
+Add exception hendling;false
+Refactor Code;false
+Use enums;false
+create a class for operations;false

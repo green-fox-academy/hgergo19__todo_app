@@ -1,86 +1,39 @@
 package todo;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
-public class Todo {
+public abstract class Todo {
+    static Map<String, String> arguments = new LinkedHashMap(4, .75F);
+    static TaskParser parser = new TaskParser();
+    private static final List<String> longCommands = new ArrayList<>(Arrays.asList("-list", "-listAll", "-add", "-remove", "-complete"));
 
-
-    Map<String, String> arguments = new LinkedHashMap(4, .75F);
-    TaskParser parser = new TaskParser();
-
-
-    public void checkArgument(String[] args) {
+    public static void checkArgument(String[] args) {
         fillArguments();
         if (args.length == 0) {
             Printer.printInstructions(arguments);
-        } else if (!arguments.containsKey(args[0])) {
+        } else if (!arguments.containsKey(args[0]) && (!longCommands.contains(args[0]))) {
             System.out.println("Unsupported Argument: " + args[0]);
         } else {
-            if (args[0].equals("-l")) {
+            if (args[0].equals("-l") || args[0].equals("-list")) {
+                Printer.printUndone(parser);
+            } else if (args[0].equals("-la") || args[0].equals("-listAll")) {
                 Printer.printInfo(parser);
-            } else if (args[0].equals("-a")) {
-                addTask(args);
-            } else if (args[0].equals("-r")) {
-                removeTask(args);
-            } else if (args[0].equals("-c")) {
-                completeTask(args);
+            } else if (args[0].equals("-a") || args[0].equals("-add")) {
+                ArgumentOperations.addTask(args, parser);
+            } else if (args[0].equals("-r") || args[0].equals("-remove")) {
+                ArgumentOperations.removeTask(args, parser);
+            } else {
+                ArgumentOperations.completeTask(args, parser);
             }
         }
     }
 
-    private void completeTask(String[] arg) {
-        if (arg.length == 1) {
-            System.out.println("Unable to check: no index provided");
-        } else if (isNumber(arg[1])) {
-            System.out.println("Unable to remove: index is not a number");
-        } else if (Integer.parseInt(arg[1]) > parser.getTasks().size()) {
-            System.out.println("Unable to remove: index is out of bound");
-        } else {
-            parser.getTasks().get(Integer.parseInt(arg[1]) - 1).setCompleted();
-            parser.refillContentLines();
-            Printer.successfulOperation();
-        }
-    }
-
-    private void addTask(String[] args) {
-        if (args.length == 1) {
-            System.out.println("Unable to add: no task provided");
-        } else {
-            parser.getTasks().add(new Task(args[1], false));
-            parser.refillContentLines();
-            Printer.successfulOperation();
-        }
-    }
-
-    private void removeTask(String[] args) {
-        if (args.length == 1) {
-            System.out.println("Unable to remove: no index provided!");
-        } else if (isNumber(args[1])) {
-            System.out.println("Unable to remove: index is not a number");
-        } else if (Integer.parseInt(args[1]) > parser.getTasks().size()) {
-            System.out.println("Unable to remove: index is out of bound");
-        } else {
-            parser.getTasks().remove(Integer.parseInt(args[1]) - 1);
-            parser.refillContentLines();
-            Printer.successfulOperation();
-        }
-    }
-
-    private boolean isNumber(String arg) {
-        try {
-            Integer.parseInt(arg);
-        } catch (NumberFormatException e) {
-            return true;
-        }
-        return false;
-    }
-
-    private void fillArguments() {
-        arguments.put("-l", "Lists all the tasks");
-        arguments.put("-a", "Adds a new task");
-        arguments.put("-r", "Removes a task");
-        arguments.put("-c", "Completes a task");
+    private static void fillArguments() {
+        arguments.put("-l", "(-list) Lists the undone tasks");
+        arguments.put("-la", "(-listAll) Lists all tasks");
+        arguments.put("-a", "(-add) Adds a new task");
+        arguments.put("-r", "(-remove) Removes a task");
+        arguments.put("-c", "(-complete) Completes a task");
     }
 
 

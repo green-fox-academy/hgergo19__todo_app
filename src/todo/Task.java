@@ -1,8 +1,6 @@
 package todo;
 
-import java.io.Serializable;
-
-public class Task implements Serializable {
+public class Task {
     private String description;
     private boolean isCompleted;
 
@@ -23,10 +21,8 @@ public class Task implements Serializable {
         return description;
     }
 
-
-
     @Override
     public String toString() {
-        return  description + isCompleted;
+        return description + isCompleted;
     }
 }

@@ -9,7 +9,7 @@ import java.util.List;
 
 public class ReadWrite {
     static final Path path = Paths.get("C:\\Users\\gerik\\Desktop\\greenfox\\hgergo19__todo_app\\src\\todo\\files\\tasks.txt");
-    List<String> contentLines;
+    protected List<String> contentLines;
 
     public ReadWrite() {
         contentLines = new ArrayList<>();
@@ -27,9 +27,9 @@ public class ReadWrite {
         }
     }
 
-    public void write(){
+    public void write() {
         try {
-            Files.write(path,contentLines);
+            Files.write(path, contentLines);
         } catch (IOException e) {
             e.printStackTrace();
         }

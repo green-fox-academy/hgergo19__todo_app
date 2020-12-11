@@ -1,7 +1,6 @@
 package todo;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Todo {
@@ -9,81 +8,72 @@ public class Todo {
 
     Map<String, String> arguments = new LinkedHashMap(4, .75F);
     TaskParser parser = new TaskParser();
-    String checkBox = "";
 
 
     public void checkArgument(String[] args) {
         fillArguments();
         if (args.length == 0) {
-            printInstructions();
+            Printer.printInstructions(arguments);
         } else if (!arguments.containsKey(args[0])) {
-            throw new UnsupportedOperationException();
+            System.out.println("Unsupported Argument: " + args[0]);
         } else {
             if (args[0].equals("-l")) {
-                listTasks();
+                Printer.printInfo(parser);
             } else if (args[0].equals("-a")) {
-                if (args.length == 1) {
-                    System.out.println("Unable to add: no task provided");
-                } else {
-                    addTask(args[1]);
-                }//TODO : Exception handling
+                addTask(args);
             } else if (args[0].equals("-r")) {
-                removeTask(args[1]);
+                removeTask(args);
             } else if (args[0].equals("-c")) {
-                completeTask(args[1]);
+                completeTask(args);
             }
         }
     }
 
-    private void completeTask(String arg) {
-        parser.getTasks().get(Integer.parseInt(arg) - 1).setCompleted();
-        parser.refillContentLines();
-        successfulOperation();
-    }
-
-    private void addTask(String arg) {
-        parser.getTasks().add(new Task(arg, false));
-        parser.refillContentLines();
-        successfulOperation();
-    }
-
-    private void removeTask(String arg) {
-        parser.getTasks().remove(Integer.parseInt(arg) - 1);
-        parser.refillContentLines();
-        successfulOperation();
-    }
-
-    private void listTasks() {
-        List<Task> tasks = parser.getTasks();
-        if (tasks.size() == 0) {
-            System.out.println("No todos for today! :)");
+    private void completeTask(String[] arg) {
+        if (arg.length == 1) {
+            System.out.println("Unable to check: no index provided");
+        } else if (isNumber(arg[1])) {
+            System.out.println("Unable to remove: index is not a number");
+        } else if (Integer.parseInt(arg[1]) > parser.getTasks().size()) {
+            System.out.println("Unable to remove: index is out of bound");
+        } else {
+            parser.getTasks().get(Integer.parseInt(arg[1]) - 1).setCompleted();
+            parser.refillContentLines();
+            Printer.successfulOperation();
         }
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < tasks.size(); i++) {
-            if (tasks.get(i).isCompleted()) {
-                checkBox = "[X]";
-            } else {
-                checkBox = "[ ]";
-            }
-            stringBuilder.append(i + 1).append(" - ").append(checkBox).append(" ").append(tasks.get(i).getDescription()).append("\n");
-
-        }
-        System.out.println("\n" + stringBuilder);
     }
 
-    private void successfulOperation() {
-        System.out.println("Operation finished successfully!");
+    private void addTask(String[] args) {
+        if (args.length == 1) {
+            System.out.println("Unable to add: no task provided");
+        } else {
+            parser.getTasks().add(new Task(args[1], false));
+            parser.refillContentLines();
+            Printer.successfulOperation();
+        }
     }
 
-    private void printInstructions() {
-        System.out.println();
-        System.out.println();
-        System.out.println("Command Line Todo application " +
-                "\n============================= \n" +
-                "\nCommand line arguments:");
-        for (Map.Entry<String, String> entry : arguments.entrySet()) {
-            System.out.println("\t" + entry.getKey() + "\t" + entry.getValue());
+    private void removeTask(String[] args) {
+        if (args.length == 1) {
+            System.out.println("Unable to remove: no index provided!");
+        } else if (isNumber(args[1])) {
+            System.out.println("Unable to remove: index is not a number");
+        } else if (Integer.parseInt(args[1]) > parser.getTasks().size()) {
+            System.out.println("Unable to remove: index is out of bound");
+        } else {
+            parser.getTasks().remove(Integer.parseInt(args[1]) - 1);
+            parser.refillContentLines();
+            Printer.successfulOperation();
         }
+    }
+
+    private boolean isNumber(String arg) {
+        try {
+            Integer.parseInt(arg);
+        } catch (NumberFormatException e) {
+            return true;
+        }
+        return false;
     }
 
     private void fillArguments() {

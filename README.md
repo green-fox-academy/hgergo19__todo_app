@@ -3,7 +3,7 @@ To Do Console application
 
 An application that can manage TODO tasks in command line
 
-##Command Line Todo application
+## Command Line Todo application
 
 
  ### Command line arguments:
